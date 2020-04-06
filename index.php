@@ -12,12 +12,7 @@ $nav_data = [
 
 $nav = new Template($config['nav'], $nav_data);
 
-$body_data = [
-    'title' => 'My title',
-    'content' => 'My content'
-];
-
-$body = new Template($router['template'], $body_data);
+$body = new Template($router['template']);
 
 $site_data = [
     'style' => $config['style'],
