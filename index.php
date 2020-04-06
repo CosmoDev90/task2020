@@ -1,4 +1,5 @@
 <?php
+require('./services/pagination.php');
 require('./services/router.php');
 require('./services/template.php');
 
@@ -14,7 +15,11 @@ $nav = new Template($config['nav'], $nav_data);
 
 $body = new Template($router['template']);
 
-$pagination = new Template($config['pagination']);
+$pagination_data = [
+    'menu_items' => get_pagination($nav_data),
+];
+
+$pagination = new Template($config['pagination'], $pagination_data);
 
 $site_data = [
     'style' => $config['style'],

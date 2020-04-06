@@ -1,10 +1,7 @@
 <div class="pagination">
-    <!-- if -->
-    <a class="menu-item" href="">
-        <- Previous Task
-    </a>
-    <!-- if -->
-    <a class="menu-item" href="">
-        Next Task ->
-    </a>
+    <?php foreach($menu_items as $page): ?>
+        <a class="menu-item" href="<?= $page['route'] ?>">
+            <?= $page['title'] ?>
+        </a>
+    <?php endforeach; ?>
 </div>
