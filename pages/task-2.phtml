@@ -1,0 +1,271 @@
+<h1>Task 2</h1>
+
+<div class="code-snippet">
+    <div class="code example">
+        $number_of_products = 50;
+    </div>
+    <p>
+        Hard coding the expected number of products appears erroneous from the start. If we are aiming to handle for a maximum limit, then I would state that more clearly in the variable name:
+    </p>
+    <div class="code response">    
+        $max_products = 50;
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $product_feed = fgetcsv("http://www.external-domain.com/product_feed.csv");
+    </div>
+    <p>
+        Assuming fgetcsv would be able to read an externally hosted file by just calling it directly, calling fgetcsv outside of a loop will only return the first line from the csv.
+    </p>
+    <p>
+        This would be better handled by first checking that the file is readable:
+    </p>
+    <div class="code response">
+        $product_feed = 'http://www.external-domain.com/product_feed.csv';<br>
+        <br>
+        if ($handle = fopen($product_feed, 'r'))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;...
+    </div>
+    <p>
+        Then call the fgetcsv from within a loop:
+    </p>
+    <div class="code response">
+        if ($handle = fopen($product_feed, 'r'))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;while ($data = fgetcsv($handle, 1000, ','))<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...
+    </div>
+    <p>
+        While we do not know how many items are within the external product feed, but we have a maximum limit we wish to process, it would be wise to also increment a counter and exit the while loop if the max limit is ever reached.
+    </p>
+    <div class="code response">
+        $max_products = 50;<br>
+        $counter = 0;<br>
+        <br>
+        if ($handle = fopen($product_feed, 'r'))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;while (($data = fgetcsv($handle, 1000, ','))<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&& $counter < $max_products)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$counter++;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $product_price_feed = new price_feed_web_service;
+    </div>
+    <p>
+        It is best to handle imports at the top of the file, example:
+    </p>
+    <div class="code response">
+        require_once('./price_feed_web_service.php');
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $product_price_feed->get_prices();
+    </div>
+    <p>
+        We should fail test after we have called the 'get_price' method to ensure we now have an array of prices.
+    </p>
+    <div class="code response">
+        if (!$product_price_feed || empty($product_price_feed))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;error_log('No product price feed data returned.’);<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return;<br>
+        }
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $product_data = array();<br>
+        for($counter=0; $counter < 50; $counter++)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;...
+    </div>
+    <p>
+        Using a For loop here assumes that the $product_feed will always return 50 items to loop over. This would be better handled by using our previously discussed counter increment:
+    </p>
+    <div class="code response">
+        $product_data = [];<br>
+        if ($handle = fopen($product_feed, 'r'))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;while (($data = fgetcsv($handle, 1000, ',')) && $counter <= $max_products)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$counter++;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        }
+    </div>
+    <p>
+        This way we either get every row available from the fgetcsv cycle or we exit our while loop once we have returned our $max_products limit.
+    </p>
+</div>
+
+<div class="code-snippet">
+    <p>
+        Taking the given 'Product Feed Sample' literally. If it was to be converted to a csv as it is shown, the first row would contain headers, which would be of no use to us when storing in our database.
+    </p>
+    <p>
+        In this scenario, it would be best to skip the first row of our csv before we handle formatting the rest of the data:
+    </p>
+    <div class="code response">
+        if ($handle = fopen($product_feed, 'r'))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$is_first_row = true;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;while (($data = fgetcsv($handle, 1000, ',')) && $counter <= $max_products)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ($is_first_row)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;// Skip first row of csv headings.<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$is_first_row = false;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;...<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        }
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        for($counter=0; $counter < 50; $counter++)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$product_data[] = array($product_feed[$counter][0], $product_feed[$counter][1], $product_price_feed[$counter][1]);<br>
+        }
+    </div>
+    <p>
+        Building our array data set in this way does not read well and leads later on to even more messy code when attempting to insert it into a query format. It also assumes that the $product_price_feed will always return a price, without any testing.
+    </p>
+    <p>
+        I would extract obtaining the product price to its own method, and then format the $product_data with an associative array:
+    </p>
+    <div class="code response">
+        /**<br>
+        * Get product price based on its id.<br>
+        *<br>
+        * @param object $price_feed<br>
+        * @param int $product_id<br>
+        * @return string|null<br>
+        */<br>
+        function getProductPrice($price_feed, $product_id)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;foreach ($price_feed as $item)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;if ($item[0] === $product_id)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return $item[1];<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return null;<br>
+        }<br>
+        <br>
+        $product_data = [];<br>
+        while (...)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$product_id = (int)$data[0];<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$product_price = getProductPrice($product_price_feed, $product_id);<br>
+            <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if (!$product_price)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error.log('Product skipped. No price set for id: ' . $product_id );<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;continue;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+            <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$product_data[] = [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'id' => $product_id,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'name' => $data[1],<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;'price' => $product_price,<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;];<br>
+        }
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $query = "INSERT INTO product_price_data (product_id, product_name, price) VALUES ";<br>
+        <br>
+        $first = true;<br>
+        for($counter=0; $counter < 50; $counter++)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if(!$first) { $query .= ","; }<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$query .= " ({$product_data[$counter][0]}, {$product_data[$counter][1]}, {$product_data[$counter][2]}) ";<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$first = false;<br>
+        }
+    </div>
+    <p>
+        When formatting our data for storage, a for loop continues to be a bad approach, for it assumes how many items we have in our product_data array.
+    </p>
+    <p>
+        This would be better handled with a foreach:
+    </p>
+    <div class="code response">
+        foreach ($product_data as $product) {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;...<br>
+        }
+    </div>
+    <p>
+        We can then use our associative array to format our query. The foreach would then look like:
+    </p>
+    <div class="code response">
+        $first = true;<br>
+        foreach ($product_data as $product)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if (!$first)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$query .= ",";<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$query .=<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;"(" .<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product['id'] . "," .<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product['name'] . "," .<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product['price'] .<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;")";<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$first = false;<br>
+        }
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        mysql_connect("external-domain-2.com", "admin", "admin");<br>
+        mysql_select_db("product");<br>
+        mysql_query($query);<br>
+    </div>
+    <p>
+        mysql_connect has been deprecated. Alternatively we could use mysqli. This connection should also then be fail tested before we attempt to commit our query:
+    </p>
+    <div class="code response">
+        $db_connect = mysqli_connect("external-domain-2.com", "admin", "admin", "product");<br>
+        if (!$db_connect)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;error.log('Database not connected.');<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return;<br>
+        }<br>
+        mysqli_query($query);<br>
+        mysqli_close();<br>
+    </div>
+    <p>
+        I would also consider moving the db_connect test to the top of the file, to ensure a connection is established, before we start formatting data.
+    </p>
+</div>
+
+<div class="code-snippet">
+    <h3>Additional changes:</h3>
+    <p>
+        We could include the product_code within the 'product price' data, so that we can be sure that our product and price always align. With the product_id being auto_incremented within the db, and our data being pulled from several external sources, there is a chance the product_id could end up out of synch somewhere and we run the risk of pairing up the wrong product and price.
+    </p>
+    <p>
+        Knowing that we are to be expecting 50 products to be processed, we could consider chunking the gathered product_feed data into more manageable chunks before we begin formatting and storing the data. This approach, when fully implemented, would allow for multiple sets to be processed asynchronously, speeding up the overall processing time.
+    </p>
+</div>

@@ -1,0 +1,146 @@
+<h1>Task 1</h1>
+
+<div class="code-snippet">
+    <div class="code example">
+        $database = new database_connection_script_library;
+    </div>
+    <p>
+        Is neither a defined class or imported. I would define all imports at the top of the file, to make it easier to locate:
+    </p>
+    <div class="code response">
+        require_once(./database_connection_script_library.php);
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $results = $database-get_recommended_products{"ALL")
+    </div>
+    <p>
+        Has syntax errors, should be:
+    </p>
+    <div class="code response">
+        $results = $database->get_recommended_products("ALL");
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $data = array();
+    </div>
+    <p>
+        Is using old syntax. It is still accepted, however I would write as:
+    </p>
+    <div class="code response">
+        $data = [];
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        foreach($results as $results)
+    </div>
+    <p>
+        '$results' is already defined. My expected alternative would be:
+    </p>
+    <div class="code response">
+        foreach($results as $result)
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        $date[]
+    </div>
+    <p>
+        Is not previously defined. This appears to be a typo and should be:
+    </p>
+    <div class="code response">
+        $data[]
+    </div>
+    <p>
+        The entire foreach could therefore read:
+    </p>
+    <div class="code response">
+        foreach($results as $result)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$data[] = $result[0];<br>
+        }
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        if($data_result)
+    </div>
+    <p>
+        '$data_result' is not defined. This check could be written several ways: 
+    </p>
+    <div class="code response">
+        if(!empty($data))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;...        
+    </div>
+    <p>
+        Or even
+    </p>
+    <div class="code response">
+        if(count($data))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;...
+    </div>
+</div>
+
+<div class="code-snippet">
+    <div class="code example">
+        if($data_result)<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return $data<br>
+        )<br>
+        else<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return false;<br>
+        }
+    </div>
+    <p>
+        'return $data' is missing a semicolon and the if closes with an incorrect bracket.
+    </p>
+    <p>
+        I would personally not handle a fail case in an else statement. Therefore the entire return section could be handled in a couple of ways:
+    </p>
+    <div class="code response">
+        if (empty($data))<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return false;<br>
+        }<br>
+        <br>
+        return $data;
+    </div>
+    <p>
+        Or we could use a ternary:
+    </p>
+    <div class="code response">
+        return !empty($data) ? $data : false;
+    </div>
+    <p>
+        However in this instance, a ternary would be more difficult to understand what is the intended behaviour.
+    </p>
+</div>
+
+<div class="code-snippet">
+    <p>
+        The function get_data is then closed with a ')' instead of '}';
+    </p>
+</div>
+
+<!-- <div class="code-snippet">
+    <div class="code example">
+
+    </div>
+    <p>
+
+    </p>
+    <div class="code response">
+        
+    </div>
+</div> -->

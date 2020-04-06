@@ -1,0 +1,10 @@
+<div class="nav">
+    <div class="menu-items">
+        <?php foreach($pages as $page): ?>
+            <?php $active = $page['key'] === $key ? 'active' : '' ?>
+            <a class="menu-item <?= $active ?>" href="<?= $page['route'] ?>">
+                <?= $page['title'] ?>
+            </a>
+        <?php endforeach; ?>
+    </div>
+</div>
