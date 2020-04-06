@@ -8,3 +8,5 @@ Routing
 
 - All file paths are handled within the router:
   /services/router.php
+
+@todo Include previous + next footer navigation

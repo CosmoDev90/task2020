@@ -60,6 +60,13 @@ a.menu-item:not(.active):hover {
     opacity: .8;
 }
 
+@media only screen and (max-width: 600px) {
+    a.menu-item {
+        padding: 0 10px;
+        min-width: 34px;
+    }
+}
+
 
 /**
  * Site Content
