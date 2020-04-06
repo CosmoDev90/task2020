@@ -91,6 +91,7 @@ function router()
 
     $data['config'] = [
         'nav' => $root . '/components/nav.phtml',
+        'pagination' => $root . '/components/pagination.phtml',
         'site' => $root . '/components/site.phtml',
         'style' => '/css/style.css',
     ];
