@@ -34,6 +34,12 @@ function get_pages()
             'template' => $root . '/pages/task-4.phtml',
             'title' => 'Task 4',
         ],
+        [
+            'key' => 'git-hub',
+            'route' => 'https://github.com/CosmoDev90/task2020',
+            'template' => null,
+            'title' => 'GitHub<br>Repo',
+        ]
     ];
 }
 
