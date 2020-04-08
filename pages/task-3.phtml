@@ -1,1 +1,56 @@
 <h1>Task 3</h1>
+
+<div class="code-snippet">
+    <div class="code response">
+        <\?php<br>
+        namespace project;<br>
+            <br>
+        require_once('./database_connection_script_library.php');<br>
+            <br>
+        function export_products_to_file()<br>
+        {<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$database = new database_connection_script_library;<br>
+                <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if (!$database)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error_log('Unable to connect to database.');<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$products = $database->get_products('ALL');<br>
+                <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;if (!$products || empty($products))<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;error_log('No products to process.');<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;return;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$product_data = [];<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;$product_insert_count = 0;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;foreach ($products as $product)<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;{<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$myfile = fopen("myfile.csv", "a+");<br>
+                    <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$file_data = [<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product['product_id'],<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product['product_name'],<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product['product_price']<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;];<br>
+                    <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fputcsv($myfile, $file_data);<br>
+                    <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;fclose($myfile);<br>
+                    <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;$product_insert_count++;<br>
+        &nbsp;&nbsp;&nbsp;&nbsp;}<br>
+                <br>
+        &nbsp;&nbsp;&nbsp;&nbsp;return $product_insert_count;<br>
+        }<br>
+            <br>
+        $files_exported = export_products_to_file();<br>
+            <br>
+        echo 'Files exported: ' . $files_exported . PHP_EOL;<br>
+            <br>
+        ?>
+    </div>
+</div>
