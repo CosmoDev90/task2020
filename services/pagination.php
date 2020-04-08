@@ -34,6 +34,5 @@ function get_pagination($nav)
         $pagination_data[] = $pages[$index + 1];
     }
 
-    // var_dump($pagination_data); exit;
     return $pagination_data;
 }

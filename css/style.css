@@ -127,3 +127,12 @@ a.menu-item:not(.active):hover {
 .pagination .menu-item {
     margin: 0 20px;
 }
+
+/*
+ * Footer
+ */
+.footer {
+    text-align: center;
+    color: #f7f7f7;
+    margin-bottom: 20px;
+}
