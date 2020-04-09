@@ -252,12 +252,10 @@
         &nbsp;&nbsp;&nbsp;&nbsp;error.log('Database not connected.');<br>
         &nbsp;&nbsp;&nbsp;&nbsp;return;<br>
         }<br>
-        mysqli_query($query);<br>
-        mysqli_close();<br>
+        $result = mysqli_query($db_connect, $query);<br>
+        mysqli_close($db_connect);<br>
+        return $result;<br>
     </div>
-    <p>
-        I would also consider moving the db_connect test to the top of the file, to ensure a connection is established, before we start formatting data.
-    </p>
 </div>
 
 <div class="code-snippet">
